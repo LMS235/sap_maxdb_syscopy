@@ -1,6 +1,9 @@
 #sap_maxdb_syscopy
+
 #SAP MaxDB System Copy Tool (c) Florian Lamml 2017
+
 #www.florian-lamml.de
+
 
 Automatic System Copy Tool for SAP Systems in MaxDB and Linux (SLES/RHEL) / Unix (AIX)
 
