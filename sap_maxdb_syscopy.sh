@@ -15,6 +15,8 @@
 # - the source database must be online, the target database must be able to start in state admin        #
 # - adjust the configuration of source and target system in this script                                 #
 # - best use with screen tool for unix/linux                                                            #
+# - under Linux it can happen that you have to change the first line                                    #
+#   from "#!/usr/bin/bash" to "#!/bin/bash" (check bash with "which bash")                              #
 #########################################################################################################
 
 # Features ##############################################################################################
