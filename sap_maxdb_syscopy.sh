@@ -1359,6 +1359,9 @@ do
  sshtarget 'dbmcli -d '$targetsid' '"$dbmcliconnettarget"' recover_state' > /tmp/dbcopy_tmp_recover_state
  # restore overall pages
  export restoreprograssall=$(cat /tmp/dbcopy_tmp_recover_state | grep Count | grep -v Converter | awk '{ print $3 }')
+  if ( [ -z "$restoreprograssall" ] || [ "$restoreprograssall" == "0" ] );
+	then restoreprograssall=1
+  fi
  # restore left pages
  export restoreprogressleft=$(cat /tmp/dbcopy_tmp_recover_state | grep Left | awk '{ print $3 }')
  # restore transfered pages
