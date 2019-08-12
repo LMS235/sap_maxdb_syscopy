@@ -793,13 +793,13 @@ then
   # save secdir
   if [ $abaporjava == abap ];
   then 
-    sshtarget  'cdD; cp -rp sec syscopy_sec' >> $dbcopylog
-	export savesecdirpath=$(sshtarget 'cdD; cd syscopy_sec; pwd')
+    sshtarget  'cd /usr/sap/$SAPSYSTEMNAME/D[0-9][0-9]; cp -rp sec syscopy_sec' >> $dbcopylog
+	export savesecdirpath=$(sshtarget 'cd /usr/sap/$SAPSYSTEMNAME/D[0-9][0-9]; cd syscopy_sec; pwd')
 	echo "SEC dir of "$targetsid" was saved to "$savesecdirpath" on "$targethost $(date "+%d.%m.%Y %H:%M:%S") >> $dbcopylog
   elif [ $abaporjava == java ];
   then
-    sshtarget  'cdJ; cp -rp sec syscopy_sec' >> $dbcopylog
-	export savesecdirpath=$(sshtarget 'cdJ; cd syscopy_sec; pwd')
+    sshtarget  'cd /usr/sap/$SAPSYSTEMNAME/J[0-9][0-9]; cp -rp sec syscopy_sec' >> $dbcopylog
+	export savesecdirpath=$(sshtarget 'cd /usr/sap/$SAPSYSTEMNAME/J[0-9][0-9]; cd syscopy_sec; pwd')
 	echo "SEC dir of "$targetsid" was saved to "$savesecdirpath" on "$targethost $(date "+%d.%m.%Y %H:%M:%S") >> $dbcopylog
   else
     export savesecdirpath='Cannot save secdir'
