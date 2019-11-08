@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SYSCOPY MaxDB AIX/LINUX ###############################################################################  
-################################################################################ (c) 2017 Florian Lamml #
+################################################################################ (c) 2019 Florian Lamml #
 
 # Prerequisites #########################################################################################
 # - ssh communication between source and target without password (authorized_keys2) for both sidadm     #
@@ -89,6 +89,8 @@ export abaporjava=abap
 export exportlocation=/tmp
 # import after syscopy (default yes)
 export autoimport=yes
+# export/import client (default 000, only all or 000, DO NOT USE ANY OTHER CLIENT)
+export expimpclient=000
 # export E070L (default yes, should be done if target is an existing system)
 export e07lexport=yes
 # SAP License (default yes)
@@ -137,6 +139,14 @@ export scc4export=no
 export reportvariants=no
 # DBACOCKPIT
 export dbacockpit=no
+# HTTPURLLOC
+export httpurlloc=no
+# LDAP
+export ldap=no
+# VSCAN
+export vscan=no
+# SPAD
+export spad=no
 # Custom Tables (adjust array tables_customtables like this ('table1' 'table2' 'table3'))
 export customtables=no
 declare -a tables_customtables=('table1' 'table2' 'table3')
@@ -219,7 +229,7 @@ declare -a tables_rz10export=('TPFET' 'TPFHT')
 # rz04export
 declare -a tables_rz04export=('BTCOMSET' 'TPFBA' 'TPFID')
 # strustexport
-declare -a tables_strustexport=('SMIME_CAPA_CRYPT' 'SMIME_CAPA_SIGN' 'SMIME_CAPABILITY' 'SSF_PSE_D' 'SSF_PSE_H' 'SSF_PSE_HIST' 'SSF_PSE_L' 'SSF_PSE_T' 'SSFAPPLIC' 'SSFAPPLICT' 'SSFARGS' 'SSFVARGS' 'SSFVARGST' 'SSFVKEYDEF' 'STRUSTCAB' 'STRUSTCERT' 'STRUSTCRL' 'STRUSTCRP' 'STRUSTCRPT' 'STRUSTCRR' 'STRUSTCRRT' 'STRUSTCRS' 'STRUSTCRT' 'TWPSSO2ACL' 'USERINFO_STORAGE' 'USRCERTMAP' 'USRCERTRULE')
+declare -a tables_strustexport=('SMIME_CAPA_CRYPT' 'SMIME_CAPA_SIGN' 'SMIME_CAPABILITY' 'SSF_PSE_D' 'SSF_PSE_H' 'SSF_PSE_HIST' 'SSF_PSE_L' 'SSF_PSE_T' 'SSFAPPLIC' 'SSFAPPLICT' 'SSFARGS' 'SSFVARGS' 'SSFVARGST' 'SSFVKEYDEF' 'STRUSTCAB' 'STRUSTCABEMAIL' 'STRUSTCERT' 'STRUSTCRL' 'STRUSTCRP' 'STRUSTCRPT' 'STRUSTCRR' 'STRUSTCRRT' 'STRUSTCRS' 'STRUSTCRT' 'STRUSTSMIM' 'STRUSTSMIMT' 'STRUSTSSL' 'STRUSTSSLS' 'STRUSTSSLST' 'STRUSTSSLT' 'STRUSTWSSE' 'STRUSTWSSET' 'TWPSSO2ACL' 'USERINFO_STORAGE' 'USRCERTMAP' 'USRCERTRULE')
 # strustsso2export
 declare -a tables_strustsso2export=('SNCSYSACL' 'TSP0U' 'TXCOMSECU' 'USRACL' 'USRACLEXT')
 # stmsqaexport
@@ -237,9 +247,9 @@ declare -a tables_rz70sldexport=('LCRT_INDX' 'SLDAGADM')
 # scotexport
 declare -a tables_scotexport=('BCSD_BLMODULE' 'BCSD_BREAKLOOP' 'BCSD_RQST' 'BCSD_STML' 'SXADMINTAB' 'SXCONVERT' 'SXCONVERT2' 'SXCOS' 'SXCOS_T' 'SXCPDEF' 'SXCPRECV' 'SXCPSEND' 'SXDEVTYPE' 'SXDEVTYPL' 'SXDOMAINS' 'SXJOBS' 'SXNODES' 'SXPARAMS' 'SXRETRY' 'SXROUTE' 'SXSERV' 'SXTELMOIN' 'SXTELMOOUT' 'T005J' 'T005K' 'TSAPD')
 # sicfexport
-declare -a tables_sicfexport=('ICF_SESSION_CNTL' 'ICFAPPLICATION' 'ICFDOCU' 'ICFHANDLER' 'ICFINSTACT' 'ICFSECPASSWD' 'ICFSERVICE' 'ICFSERVLOC' 'ICFVIRHOST' 'TWPURLSVR')
+declare -a tables_sicfexport=('ICF_SESSION_CNTL' 'ICFALIAS' 'ICFAPPLCUST' 'ICFAPPLICATION' 'ICFDOCU' 'ICFHANDLER' 'ICFINSTACT' 'ICFSECPASSWD' 'ICFSERVICE' 'ICFSERVLOC' 'ICFVIRHOST' 'TWPURLSVR')
 # rfcconnectionsexport
-declare -a tables_rfcconnectionsexport=('RFC_TT_ACL' 'RFC_TT_ACL_HIST' 'RFC_TT_SAMEU' 'RFCADPTATTR' 'RFCATTRIB' 'RFCCAT' 'RFCCHECK' 'RFCCMC' 'RFCDES' 'RFCDESSECU' 'RFCDOC' 'RFCGO' 'RFC2SOAPS' 'RFCSOAPS' 'RFCSYSACL' 'RFCSYSACL_CLNT' 'RFCTRUST' 'RFCTXTAB' 'RFCTYPE' 'RSECACHK' 'RSECACTB' 'RSECTAB' 'SNCSYSACL')
+declare -a tables_rfcconnectionsexport=('APC_CROSS_ORIGIN' 'RFC_TT_ACL' 'RFC_TT_ACL_HIST' 'RFC_TT_SAMEU' 'RFCADPTATTR' 'RFCATTRIB' 'RFCCAT' 'RFCCBWHITELIST' 'RFCCBWHITELIST_A' 'RFCCHECK' 'RFCCMC' 'RFCDES' 'RFCDESSECU' 'RFCDOC' 'RFCGO' 'RFC2SOAPS' 'RFCSOAPS' 'RFCSYSACL' 'RFCSYSACL_CLNT' 'RFCTRUST' 'RFCTXTAB' 'RFCSTXTAB' 'RFCTYPE' 'RSECACHK' 'RSECACTB' 'RSECKEYMETA' 'RSECTAB' 'SNCSYSACL')
 # we202197export
 declare -a tables_we202197export=('EDIPO' 'EDIPO2' 'EDIPOA' 'EDIPOACODPAG' 'EDIPOD' 'EDIPOF' 'EDIPOI' 'EDIPORT' 'EDIPOX' 'EDIPOXH' 'EDIPOXU' 'EDP12' 'EDP13' 'EDP21' 'EDPP1' 'TBLSYSDEST' 'TBSPECDEST')
 # sm69export
@@ -253,11 +263,19 @@ declare -a tables_gtssllexport=('/SAPSLL/TCOGVA' '/SAPSLL/TCOGVS' '/SAPSLL/TCOGV
 # oac0export
 declare -a tables_oac0export=('TOAAR')
 # scc4export
-declare -a tables_scc4export=('T000')
+declare -a tables_scc4export=('T000' 'CLMS_TENANT')
 # reportvariants
-declare -a tables_reportvariants=('VARI' 'VARID' 'VARIT' 'VARIS' 'VARINUM')
+declare -a tables_reportvariants=('TVARVC' 'VARI' 'VARID' 'VARIDESC' 'VARINUM' 'VARIS' 'VARIT')
 # dbacockpit
 declare -a tables_dbacockpit=('DB6NAVSYST' 'DB6PMPROT' 'DBA_CONFIG' 'DBCON' 'DBCONUSR' 'SDBAD' 'SDBAH' 'SDBAP' 'SDBAR')
+# httpurlloc
+declare -a tables_httpurlloc=('HTTPURLLOC' 'IACORDES' 'IACORDEST' 'IACORSITE')
+# ldap
+declare -a tables_ldap=('LDAPGATEW' 'LDAPMAP1' 'LDAPMAP2' 'LDAPMAP3' 'LDAPMAP4' 'LDAPMAP5' 'LDAPMAP6' 'LDAPSERVER' 'LDAPSYNC' 'LDAPUSER')
+# vscan
+declare -a tables_vscan=('VSCAN_GROUP' 'VSCAN_GROUP_P' 'VSCAN_GROUPT' 'VSCAN_PROF' 'VSCAN_PROF_GRP' 'VSCAN_PROF_PAR' 'VSCAN_PROFT' 'VSCAN_SERVER')
+# SPAD
+declare -a tables_spad=('TSP03' 'TSP03A' 'TSP03C' 'TSP03D' 'TSP03L' 'TSP03POCCNF' 'TSP03POCPRE' 'TSP03T' 'TSP0B' 'TSP0K' 'TSPCMDS' 'TSPLOMS' 'TSPROMS' 'TSPSV')
 # Configuration end #####################################################################################
 
 # INFOS AND CHECKS ######################################################################################
@@ -267,7 +285,7 @@ export targetsidadm=$(echo $targetsid | tr '[:upper:]' '[:lower:]')adm
 export sourcesidadm=$(echo $sourcesid | tr '[:upper:]' '[:lower:]')adm
 export pipedate=$(date "+%d%m%Y")
 export workdirectory=$(pwd)
-export dbcopy_script_version='GitHub Version 1.0 (c) Florian Lamml - 2017'
+export dbcopy_script_version='GitHub Version 1.1 (c) Florian Lamml - 2019'
 
 # clear screen
 clear
@@ -551,6 +569,7 @@ echo "DD Blocksize......:" $blocksize						| tee -a $dbcopylog
 echo "MaxDB PIPE Size...:" $pipesize						| tee -a $dbcopylog
 echo "Save secdir.......:" $savesecdir						| tee -a $dbcopylog
 echo "Table Export......: yes/no"							| tee -a $dbcopylog
+echo "Table E/I Client..:" $expimpclient                    | tee -a $dbcopylog
 echo "* SAP License.....:" $licexport                       | tee -a $dbcopylog
 echo "* E070L...........:" $e07lexport                      | tee -a $dbcopylog
 echo "* RZ10 Profiles...:" $rz10export                      | tee -a $dbcopylog
@@ -575,6 +594,10 @@ echo "* OAC0............:" $oac0export                      | tee -a $dbcopylog
 echo "* SCC4............:" $scc4export                      | tee -a $dbcopylog
 echo "* Report Variants.:" $reportvariants                  | tee -a $dbcopylog
 echo "* DBACOCKPIT......:" $dbacockpit                      | tee -a $dbcopylog
+echo "* HTTPURLLOC......:" $httpurlloc                      | tee -a $dbcopylog
+echo "* LDAP............:" $ldap                            | tee -a $dbcopylog
+echo "* VSCAN...........:" $vscan                           | tee -a $dbcopylog
+echo "* SPAD............:" $spad                           | tee -a $dbcopylog
 echo "* Custom Tables...:" $customtables                    | tee -a $dbcopylog
 if [ $sendfinishmail == yes ];
 then
@@ -817,7 +840,7 @@ then
   sleepandspace
 fi
 
-if ( [ $e07lexport == yes ] || [ $licexport == yes ] || [ $rz10export == yes ] || [ $rz04export == yes ] || [ $strustexport == yes ] || [ $strustsso2export == yes ] || [ $stmsqaexport == yes ] || [ $stmsexport == yes ] || [ $al11export == yes ] || [ $bd54export == yes ] || [ $fileexport == yes ] || [ $rz70sldexport == yes ] || [ $scotexport == yes ] || [ $sicfexport == yes ] || [ $rfcconnectionsexport == yes ] || [ $we202197export == yes ] || [ $sm69export == yes ] || [ $smlgrz12export == yes ] || [ $abapdevexport == yes ] || [ $gtssllexport == yes ] || [ $oac0export == yes ] || [ $scc4export == yes ] || [ $reportvariants == yes ] || [ $dbacockpit == yes ] || [ $customtables == yes ] ) && ( [ $donotexport -eq 0 ] );
+if ( [ $e07lexport == yes ] || [ $licexport == yes ] || [ $rz10export == yes ] || [ $rz04export == yes ] || [ $strustexport == yes ] || [ $strustsso2export == yes ] || [ $stmsqaexport == yes ] || [ $stmsexport == yes ] || [ $al11export == yes ] || [ $bd54export == yes ] || [ $fileexport == yes ] || [ $rz70sldexport == yes ] || [ $scotexport == yes ] || [ $sicfexport == yes ] || [ $rfcconnectionsexport == yes ] || [ $we202197export == yes ] || [ $sm69export == yes ] || [ $smlgrz12export == yes ] || [ $abapdevexport == yes ] || [ $gtssllexport == yes ] || [ $oac0export == yes ] || [ $scc4export == yes ] || [ $reportvariants == yes ] || [ $dbacockpit == yes ] || [ $httpurlloc == yes ] || [ $ldap == yes ] || [ $vscan == yes ] || [ $spad == yes ] || [ $customtables == yes ] ) && ( [ $donotexport -eq 0 ] );
 then
   # message
   echo "Create Export Template File"
@@ -825,6 +848,7 @@ then
   echo "Create Export Template File " $(date "+%d.%m.%Y %H:%M:%S") >> $dbcopylog
   # create export file header
   echo "export" > /tmp/dbcopy_tmp_exporttables.tpl
+  echo "client = "$expimpclient >> /tmp/dbcopy_tmp_exporttables.tpl
   echo "file = '"$exportlocation"/"$targetsid"_dbcopy_exporttables.dat'" >> /tmp/dbcopy_tmp_exporttables.tpl
   # create a unsort list of tables to export
   if [ $e07lexport == yes ];
@@ -1014,6 +1038,38 @@ then
   if [ $dbacockpit == yes ];
    then
 	  for table in "${tables_dbacockpit[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $httpurlloc == yes ];
+   then
+	  for table in "${tables_httpurlloc[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $ldap == yes ];
+   then
+	  for table in "${tables_ldap[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $vscan == yes ];
+   then
+	  for table in "${tables_vscan[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $spad == yes ];
+   then
+	  for table in "${tables_spad[@]}"
 	  do
 		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
 	  done
