@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # SYSCOPY MaxDB AIX/LINUX ###############################################################################  
-################################################################################ (c) 2019 Florian Lamml #
+################################################################################ (c) 2020 Florian Lamml #
 
 # Prerequisites #########################################################################################
 # - ssh communication between source and target without password (authorized_keys2) for both sidadm     #
@@ -285,7 +285,7 @@ export targetsidadm=$(echo $targetsid | tr '[:upper:]' '[:lower:]')adm
 export sourcesidadm=$(echo $sourcesid | tr '[:upper:]' '[:lower:]')adm
 export pipedate=$(date "+%d%m%Y")
 export workdirectory=$(pwd)
-export dbcopy_script_version='GitHub Version 1.1 (c) Florian Lamml - 2019'
+export dbcopy_script_version='GitHub Version 1.1 (c) Florian Lamml - 2020'
 
 # clear screen
 clear
