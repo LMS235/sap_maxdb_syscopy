@@ -1,6 +1,6 @@
 #sap_maxdb_syscopy
 
-#SAP MaxDB System Copy Tool (c) Florian Lamml 2019
+#SAP MaxDB System Copy Tool (c) Florian Lamml 2020
 
 #www.florian-lamml.de
 
