@@ -184,7 +184,7 @@ export secondclearlog=no
 # Warning: can adversely affect the performance of the source system!
 export backupcompressed=no
 #
-# ssh chipher (default aes192-ctr, example: arcfour, arcfour128, arcfour256, aes192-ctr, aes256-ctr, aes192-cbc, aes256-cbc etc.)
+# ssh cipher (default aes192-ctr, example: arcfour, arcfour128, arcfour256, aes192-ctr, aes256-ctr, aes192-cbc, aes256-cbc etc.)
 # on IBM Power7 "arcfour" is the fastest, on IBM Power8 "aes192-ctr" is best of security and speed
 export sshcipher=aes192-ctr
 #
@@ -285,7 +285,7 @@ export targetsidadm=$(echo $targetsid | tr '[:upper:]' '[:lower:]')adm
 export sourcesidadm=$(echo $sourcesid | tr '[:upper:]' '[:lower:]')adm
 export pipedate=$(date "+%d%m%Y")
 export workdirectory=$(pwd)
-export dbcopy_script_version='GitHub Version 1.1 (c) Florian Lamml - 2020'
+export dbcopy_script_version='GitHub Version 1.2 (c) Florian Lamml - 2020'
 
 # clear screen
 clear
@@ -362,26 +362,26 @@ fi
 sleep 1
 echo "OK!"
 
-# test source login an chipher
+# test source login an cipher
 echo -ne "* Check SSH on source... \c"
 batchmodesshsource 'exit'
 if [ $? -ne 0 ];
  then
-	echo "Problem with SSH on source! .ssh/authorized_keys2 OK? SSH Chipher OK? known hosts OK? ... EXIT! (RC=91)"
-	export RCCODE="Problem with SSH on source! .ssh/authorized_keys2 OK? SSH Chipher OK? known hosts OK? ... EXIT! (RC=91)"
+	echo "Problem with SSH on source! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=91)"
+	export RCCODE="Problem with SSH on source! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=91)"
 	sendmailcheckbatch
 	exit 91
 fi
 sleep 1
 echo "OK!"
 
-# test target login an chipher
+# test target login an cipher
 echo -ne "* Check SSH on target... \c"
 batchmodesshtarget 'exit'
 if [ $? -ne 0 ];
  then
-	echo "Problem with SSH on target! .ssh/authorized_keys2 OK? SSH Chipher OK? known hosts OK? ... EXIT! (RC=90)"
-	export RCCODE="Problem with SSH on target! .ssh/authorized_keys2 OK? SSH Chipher OK? known hosts OK? ... EXIT! (RC=90)"
+	echo "Problem with SSH on target! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=90)"
+	export RCCODE="Problem with SSH on target! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=90)"
 	sendmailcheckbatch
 	exit 90
 fi
@@ -564,7 +564,7 @@ then
 fi
 echo "DB Copy Logfile...:" $dbcopylog						| tee -a $dbcopylog
 echo "Compressed Backup.:" $backupcompressed				| tee -a $dbcopylog
-echo "SSH Chipher.......:" $sshcipher						| tee -a $dbcopylog
+echo "SSH Cipher.......:" $sshcipher						| tee -a $dbcopylog
 echo "DD Blocksize......:" $blocksize						| tee -a $dbcopylog
 echo "MaxDB PIPE Size...:" $pipesize						| tee -a $dbcopylog
 echo "Save secdir.......:" $savesecdir						| tee -a $dbcopylog
