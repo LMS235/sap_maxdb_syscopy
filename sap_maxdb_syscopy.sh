@@ -1,15 +1,15 @@
 #!/usr/bin/bash
 
 # SYSCOPY MaxDB AIX/LINUX ###############################################################################  
-################################################################################ (c) 2020 Florian Lamml #
+################################################################################ (c) 2022 Florian Lamml #
 
 # Prerequisites #########################################################################################
-# - ssh communication between source and target without password (authorized_keys2) for both sidadm     #
-#   via "ssh-keygen -t rsa -b 2048" and  ".ssh/authorized_keys2" (only source --> target)               #
+# - copy this script to the source host and set the execution right                                     #
+# - ssh communication between source and target without password (authorized_keys) for both sidadm      #
+#   via "ssh-keygen -t rsa -b 2048" and  ".ssh/authorized_keys" (only source --> target)                #
 #   --> ssh sourceadm@sourcehost must work without PW                                                   #
 #   --> ssh targetadm@targethost must work without PW                                                   #
 # - the target database is large enough (automatic check)                                               #
-# - copy this script to the source host and set the execution right                                     #
 # - xuser DEFAULT for ABAP/JAVA DB User (SAP<SID> or SAP<SID>DB) must be available                      #
 # - if passwords from source and target are different, xuser for copy can not be used                   #
 # - the source database must be online, the target database must be able to start in state admin        #
@@ -147,7 +147,19 @@ export ldap=no
 export vscan=no
 # SPAD
 export spad=no
-# Custom Tables (adjust array tables_customtables like this ('table1' 'table2' 'table3'))
+# EWZ5
+export ewz5=no
+# SBGRFCCONF
+export sbgrfcconf=no
+# SBWP
+export sbwp=no
+# SECPOL
+export secpol=no
+# SECSTORE
+export secstore=no
+# SM19
+export sm19=no
+# Custom Tables (adjust array tables_customtables like this ('table1' 'table2' 'table3') if / in Table name -> ''\''/TABPART/TABPART'\')
 export customtables=no
 declare -a tables_customtables=('table1' 'table2' 'table3')
 #
@@ -259,7 +271,7 @@ declare -a tables_smlgrz12export=('RZLLICLASS' 'RZLLITAB')
 # abapdevexport
 declare -a tables_abapdevexport=('ADIRACCESS' 'DEVACCESS' 'ENHCONTRACTCONT' 'ENHLOG' 'ENHOBJCONTRACT' 'RSEUMOD' 'VRSD' 'VRSMODISRC' 'VRSX' 'VRSX2' 'VRSX3' 'VRSX4' 'VRSX5')
 # gtssllexport
-declare -a tables_gtssllexport=('/SAPSLL/TCOGVA' '/SAPSLL/TCOGVS' '/SAPSLL/TCOGVST')
+declare -a tables_gtssllexport=(''\''/SAPSLL/TCOGVA'\' ''\''/SAPSLL/TCOGVS'\' ''\''/SAPSLL/TCOGVST'\')
 # oac0export
 declare -a tables_oac0export=('TOAAR')
 # scc4export
@@ -276,6 +288,18 @@ declare -a tables_ldap=('LDAPGATEW' 'LDAPMAP1' 'LDAPMAP2' 'LDAPMAP3' 'LDAPMAP4' 
 declare -a tables_vscan=('VSCAN_GROUP' 'VSCAN_GROUP_P' 'VSCAN_GROUPT' 'VSCAN_PROF' 'VSCAN_PROF_GRP' 'VSCAN_PROF_PAR' 'VSCAN_PROFT' 'VSCAN_SERVER')
 # SPAD
 declare -a tables_spad=('TSP03' 'TSP03A' 'TSP03C' 'TSP03D' 'TSP03L' 'TSP03POCCNF' 'TSP03POCPRE' 'TSP03T' 'TSP0B' 'TSP0K' 'TSPCMDS' 'TSPLOMS' 'TSPROMS' 'TSPSV')
+# EWZ5
+declare -a tables_ewz5=('EWUUSERTYP')
+# SBGRFCCONF
+declare -a tables_sbgrfcconf=('BGRFC_CUST_I_DST' 'BGRFC_CUST_I_SRV' 'BGRFC_CUST_I_SYS' 'BGRFC_CUST_O_DST' 'BGRFC_CUST_O_SRV' 'BGRFC_CUST_O_SYS' 'BGRFC_CUST_SUPER' 'BGRFC_MAIN_I_DST' 'QRFC_CUST_I_DEST')
+# SBWP
+declare -a tables_sbwp=('SODM' 'SOFD' 'SOFM' 'SOID' 'SOOD' 'SOUB' 'SOUC' 'SOUD')
+# SECPOL
+declare -a tables_secpol=('SEC_POLICY_CUST' 'SEC_POLICY_CUSTT' 'SEC_POLICY_RT')
+# SECSTORE
+declare -a tables_secstore=('RSECACTB' 'RSECTAB' 'RSECTAB')
+# SM19
+declare -a tables_sm19=('RSAU_BUF_DATA' 'RSAU_TEMP_CDATA' 'RSAU_TEMP_DATA' 'RSAUFILES' 'RSAUFILES_STAT' 'RSAUPROF' 'RSAUPROFEX')
 # Configuration end #####################################################################################
 
 # INFOS AND CHECKS ######################################################################################
@@ -285,7 +309,7 @@ export targetsidadm=$(echo $targetsid | tr '[:upper:]' '[:lower:]')adm
 export sourcesidadm=$(echo $sourcesid | tr '[:upper:]' '[:lower:]')adm
 export pipedate=$(date "+%d%m%Y")
 export workdirectory=$(pwd)
-export dbcopy_script_version='GitHub Version 1.2 (c) Florian Lamml - 2020'
+export dbcopy_script_version='GitHub Version 1.3 (c) Florian Lamml - 2022'
 
 # clear screen
 clear
@@ -367,8 +391,8 @@ echo -ne "* Check SSH on source... \c"
 batchmodesshsource 'exit'
 if [ $? -ne 0 ];
  then
-	echo "Problem with SSH on source! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=91)"
-	export RCCODE="Problem with SSH on source! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=91)"
+	echo "Problem with SSH on source! .ssh/authorized_keys OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=91)"
+	export RCCODE="Problem with SSH on source! .ssh/authorized_keys OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=91)"
 	sendmailcheckbatch
 	exit 91
 fi
@@ -380,8 +404,8 @@ echo -ne "* Check SSH on target... \c"
 batchmodesshtarget 'exit'
 if [ $? -ne 0 ];
  then
-	echo "Problem with SSH on target! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=90)"
-	export RCCODE="Problem with SSH on target! .ssh/authorized_keys2 OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=90)"
+	echo "Problem with SSH on target! .ssh/authorized_keys OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=90)"
+	export RCCODE="Problem with SSH on target! .ssh/authorized_keys OK? SSH Cipher OK? known hosts OK? ... EXIT! (RC=90)"
 	sendmailcheckbatch
 	exit 90
 fi
@@ -597,7 +621,12 @@ echo "* DBACOCKPIT......:" $dbacockpit                      | tee -a $dbcopylog
 echo "* HTTPURLLOC......:" $httpurlloc                      | tee -a $dbcopylog
 echo "* LDAP............:" $ldap                            | tee -a $dbcopylog
 echo "* VSCAN...........:" $vscan                           | tee -a $dbcopylog
-echo "* SPAD............:" $spad                           | tee -a $dbcopylog
+echo "* SPAD............:" $spad                            | tee -a $dbcopylog
+echo "* EWZ5............:" $ewz5                            | tee -a $dbcopylog
+echo "* SBGRFCCONF......:" $sbgrfcconf                      | tee -a $dbcopylog
+echo "* SBWP............:" $sbwp                            | tee -a $dbcopylog
+echo "* SECPOL..........:" $secpol                          | tee -a $dbcopylog
+echo "* SM19............:" $sm19                            | tee -a $dbcopylog
 echo "* Custom Tables...:" $customtables                    | tee -a $dbcopylog
 if [ $sendfinishmail == yes ];
 then
@@ -840,7 +869,7 @@ then
   sleepandspace
 fi
 
-if ( [ $e07lexport == yes ] || [ $licexport == yes ] || [ $rz10export == yes ] || [ $rz04export == yes ] || [ $strustexport == yes ] || [ $strustsso2export == yes ] || [ $stmsqaexport == yes ] || [ $stmsexport == yes ] || [ $al11export == yes ] || [ $bd54export == yes ] || [ $fileexport == yes ] || [ $rz70sldexport == yes ] || [ $scotexport == yes ] || [ $sicfexport == yes ] || [ $rfcconnectionsexport == yes ] || [ $we202197export == yes ] || [ $sm69export == yes ] || [ $smlgrz12export == yes ] || [ $abapdevexport == yes ] || [ $gtssllexport == yes ] || [ $oac0export == yes ] || [ $scc4export == yes ] || [ $reportvariants == yes ] || [ $dbacockpit == yes ] || [ $httpurlloc == yes ] || [ $ldap == yes ] || [ $vscan == yes ] || [ $spad == yes ] || [ $customtables == yes ] ) && ( [ $donotexport -eq 0 ] );
+if ( [ $e07lexport == yes ] || [ $licexport == yes ] || [ $rz10export == yes ] || [ $rz04export == yes ] || [ $strustexport == yes ] || [ $strustsso2export == yes ] || [ $stmsqaexport == yes ] || [ $stmsexport == yes ] || [ $al11export == yes ] || [ $bd54export == yes ] || [ $fileexport == yes ] || [ $rz70sldexport == yes ] || [ $scotexport == yes ] || [ $sicfexport == yes ] || [ $rfcconnectionsexport == yes ] || [ $we202197export == yes ] || [ $sm69export == yes ] || [ $smlgrz12export == yes ] || [ $abapdevexport == yes ] || [ $gtssllexport == yes ] || [ $oac0export == yes ] || [ $scc4export == yes ] || [ $reportvariants == yes ] || [ $dbacockpit == yes ] || [ $httpurlloc == yes ] || [ $ldap == yes ] || [ $vscan == yes ] || [ $spad == yes ] || [ $ewz5 == yes ] || [ $sbgrfcconf == yes ] || [ $sbwp == yes ] || [ $secpol == yes ] || [ $secstore == yes ] || [ $sm19 == yes ] || [ $customtables == yes ] ) && ( [ $donotexport -eq 0 ] );
 then
   # message
   echo "Create Export Template File"
@@ -1075,6 +1104,54 @@ then
 	  done
   fi
   
+  if [ $ewz5 == yes ];
+   then
+	  for table in "${tables_ewz5[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $sbgrfcconf == yes ];
+   then
+	  for table in "${tables_sbgrfcconf[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $sbwp == yes ];
+   then
+	  for table in "${tables_sbwp[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+  
+  if [ $secpol == yes ];
+   then
+	  for table in "${tables_secpol[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+
+  if [ $secstore == yes ];
+   then
+	  for table in "${tables_secstore[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+
+  if [ $sm19 == yes ];
+   then
+	  for table in "${tables_sm19[@]}"
+	  do
+		  echo $table >> /tmp/dbcopy_tmp_exporttables_unsort.tpl
+	  done
+  fi
+
   if [ $customtables == yes ];
    then
 	  for table in "${tables_customtables[@]}"
