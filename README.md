@@ -1,6 +1,6 @@
 # sap_maxdb_syscopy
 
-SAP MaxDB System Copy Tool (c) Florian Lamml 2020
+SAP MaxDB System Copy Tool (c) Florian Lamml 2022
 
 www.florian-lamml.de
 
@@ -10,7 +10,7 @@ Automatic System Copy Tool for SAP Systems in MaxDB and Linux (SLES/RHEL) / Unix
 
 Prerequisites 
 - ssh communication between source and target without password (authorized_keys(2)) for both sidadm     
-  via "ssh-keygen -t rsa -b 2048" and  ".ssh/authorized_keys2" (only source --> target)               
+  via "ssh-keygen -t rsa -b 2048" and  ".ssh/authorized_keys" (only source --> target)               
   --> ssh sourceadm@sourcehost must work without PW                                                   
   --> ssh targetadm@targethost must work without PW                                                   
 - the target database is large enough (automatic check)                                               
