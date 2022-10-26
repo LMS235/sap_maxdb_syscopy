@@ -466,8 +466,7 @@ echo "OK!"
 # check temporary status files source
 echo -ne "* Check tempfile write on source... \c"
 export check_tmprcheck=0
-declare -a check_tempstatusfiles=('
-dbcopy_tmpbacklist' '/tmp/dbcopy_backuplog' '/tmp/dbcopy_backupend' '/tmp/dbcopy_tmp_recover_state' '/tmp/dbcopy_pipecopyend_1' '/tmp/dbcopy_pipecopyend_2' '/tmp/dbcopy_deltables.sql' '/tmp/dbcopy_tmp_exporttables.tpl' '/tmp/dbcopy_tmp_exporttables_unsort.tpl' '/tmp/dbcopy_tmp_exporttables_sort.tpl' '/tmp/dbcopy_dbsizetarget_'$sourcesid'' '/tmp/dbcopy_dbversion_'$sourcesid'')
+declare -a check_tempstatusfiles=('/tmp/dbcopy_tmpbacklist' '/tmp/dbcopy_backuplog' '/tmp/dbcopy_backupend' '/tmp/dbcopy_tmp_recover_state' '/tmp/dbcopy_pipecopyend_1' '/tmp/dbcopy_pipecopyend_2' '/tmp/dbcopy_deltables.sql' '/tmp/dbcopy_tmp_exporttables.tpl' '/tmp/dbcopy_tmp_exporttables_unsort.tpl' '/tmp/dbcopy_tmp_exporttables_sort.tpl' '/tmp/dbcopy_dbsizetarget_'$sourcesid'' '/tmp/dbcopy_dbversion_'$sourcesid'')
 for check_tempstatusfile in "${check_tempstatusfiles[@]}"
 do
    touch $check_tempstatusfile &>/dev/null
