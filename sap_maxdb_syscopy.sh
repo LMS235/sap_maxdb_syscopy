@@ -309,7 +309,7 @@ export targetsidadm=$(echo $targetsid | tr '[:upper:]' '[:lower:]')adm
 export sourcesidadm=$(echo $sourcesid | tr '[:upper:]' '[:lower:]')adm
 export pipedate=$(date "+%d%m%Y")
 export workdirectory=$(pwd)
-export dbcopy_script_version='GitHub Version 1.3 (c) Florian Lamml - 2022'
+export dbcopy_script_version='GitHub Version 1.3.1 (c) Florian Lamml - 2022'
 
 # clear screen
 clear
